@@ -18,11 +18,22 @@
 
   const EMBEDDED_PLAYERS = [
     { rx: /(?:^|\.)youtube(?:-nocookie)?\.com$/i, label: 'YouTube' },
-    { rx: /(?:^|\.)player\.vimeo\.com$/i, label: 'Vimeo' },
-    { rx: /(?:^|\.)clips\.twitch\.tv$/i, label: 'Twitch' },
+    { rx: /(?:^|\.)youtu\.be$/i, label: 'YouTube' },
+    { rx: /(?:^|\.)vimeo\.com$/i, label: 'Vimeo' },
+    { rx: /(?:^|\.)twitch\.tv$/i, label: 'Twitch' },
     { rx: /(?:^|\.)dailymotion\.com$/i, label: 'Dailymotion' },
     { rx: /(?:^|\.)tiktok\.com$/i, label: 'TikTok' },
   ];
+
+  function detectKnownPlayer(url) {
+    try {
+      const host = new URL(url, location.href).hostname;
+      for (const { rx, label } of EMBEDDED_PLAYERS) {
+        if (rx.test(host)) return label;
+      }
+    } catch {}
+    return null;
+  }
 
   // ----- URL utils --------------------------------------------------------
 
@@ -345,6 +356,14 @@
       for (const u of candidates) {
         const absU = abs(u);
         if (seen.has(absU)) continue;
+        // Reject known-player hosts even when wrapped in a <video>/<source>.
+        // A YouTube/Vimeo/etc. URL returns HTML, not a real video stream.
+        const playerLabel = detectKnownPlayer(absU);
+        if (playerLabel) {
+          seen.add(absU);
+          items.push(makeBlockedItem(playerLabel, absU));
+          break;
+        }
         const it = makeVideoItem(absU, {
           source: 'dom-video',
           thumbnailUrl: v.poster || undefined,

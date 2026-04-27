@@ -62,9 +62,25 @@ function lastUrlSegment(url) {
   }
 }
 
+const VIDEO_EXTS = new Set(['mp4', 'webm', 'ogg', 'ogv', 'mov', 'm4v', 'mkv']);
+const IMAGE_EXTS = new Set([
+  'jpg', 'jpeg', 'png', 'webp', 'avif', 'gif', 'bmp', 'ico', 'svg', 'heic', 'heif',
+]);
+
 function ensureExt(name, item) {
   const stripped = name.replace(/\.[a-z0-9]{1,5}$/i, '');
-  const ext = item.ext || urlExt(item.url) || (item.kind === 'video' ? 'mp4' : 'jpg');
+  const candidate = String(item.ext || urlExt(item.url) || '').toLowerCase();
+  let ext;
+  if (item.kind === 'video') {
+    // Don't trust an arbitrary URL extension (e.g. a YouTube watch URL ending
+    // in /watch or .html). Only keep it if it's actually a video extension;
+    // otherwise default to mp4.
+    ext = VIDEO_EXTS.has(candidate) ? candidate : 'mp4';
+  } else if (item.kind === 'image') {
+    ext = IMAGE_EXTS.has(candidate) ? candidate : 'jpg';
+  } else {
+    ext = candidate || 'bin';
+  }
   return `${stripped}.${ext}`;
 }
 
