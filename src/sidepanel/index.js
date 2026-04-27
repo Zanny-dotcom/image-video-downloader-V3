@@ -89,9 +89,21 @@ subscribe(render);
 
 document.getElementById('rescan-btn').addEventListener('click', requestScan);
 
+document.getElementById('hard-refresh-btn').addEventListener('click', hardRefresh);
+
 document.getElementById('options-btn').addEventListener('click', () => {
   chrome.runtime.openOptionsPage();
 });
+
+async function hardRefresh() {
+  if (currentTabId == null) return;
+  console.log('[mediadl/panel] hard refresh on tab', currentTabId);
+  statusEl.textContent = 'Clearing…';
+  await chrome.runtime
+    .sendMessage({ type: 'CLEAR_ITEMS', tabId: currentTabId })
+    .catch((e) => console.warn('[mediadl/panel] CLEAR_ITEMS failed:', e));
+  requestScan();
+}
 
 document.getElementById('download-btn').addEventListener('click', () => {
   if (currentTabId == null) return;

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "minimum_chrome_version": "116",
   "name": "Universal Media Downloader",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Discover and download images and videos from any web page. DOM-based scanner with multi-select side-panel UI.",
   "permissions": ["downloads", "storage", "activeTab", "sidePanel", "scripting"],
   "optional_permissions": ["webRequest"],
