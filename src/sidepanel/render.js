@@ -31,7 +31,6 @@ export function render() {
 }
 
 function renderGrid(list, s) {
-  // Preserve checked state across re-renders
   const previouslyChecked = new Set(
     Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(
       (ck) => /** @type {HTMLInputElement} */ (ck).value
@@ -41,8 +40,26 @@ function renderGrid(list, s) {
   if (list.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty';
-    empty.textContent =
-      'Nothing here yet — try ↻ Rescan after the page settles, or scroll to load more lazy media.';
+    const totalItems = s.items.length;
+    if (totalItems === 0) {
+      const headline = document.createElement('strong');
+      headline.textContent = '0 items detected on this page.';
+      empty.appendChild(headline);
+      empty.appendChild(document.createElement('br'));
+      empty.appendChild(document.createElement('br'));
+      const tips = document.createElement('span');
+      tips.textContent =
+        'Try ↻ Rescan after the page settles, or scroll to load more lazy-loaded media.';
+      empty.appendChild(tips);
+      empty.appendChild(document.createElement('br'));
+      empty.appendChild(document.createElement('br'));
+      const debug = document.createElement('small');
+      debug.textContent =
+        'Diagnostic: open this side panel\'s DevTools (right-click here → Inspect) and check the Console for [mediadl/...] log lines.';
+      empty.appendChild(debug);
+    } else {
+      empty.textContent = `Nothing in this tab. (${totalItems} items in other tabs.)`;
+    }
     grid.appendChild(empty);
     return;
   }
@@ -137,9 +154,16 @@ function renderStatus(s) {
   if (s.summary) {
     const { found, new: newCount, alreadySaved } = s.summary;
     status.textContent = `Selected ${found}, downloading ${newCount} new (${alreadySaved} already saved).`;
-  } else {
-    status.textContent = '';
+    return;
   }
+  if (s.items.length > 0) {
+    const imgs = s.items.filter((it) => it.kind === 'image').length;
+    const vids = s.items.filter((it) => it.kind === 'video').length;
+    const blk = s.items.filter((it) => it.blocked).length;
+    status.textContent = `Found ${imgs} image${imgs === 1 ? '' : 's'}, ${vids} video${vids === 1 ? '' : 's'}${blk ? `, ${blk} blocked` : ''}.`;
+    return;
+  }
+  status.textContent = '';
 }
 
 function renderProgress(s) {

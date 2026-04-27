@@ -39,14 +39,16 @@ function hydrate(snapshot) {
 async function requestScan() {
   if (currentTabId == null) return;
   statusEl.textContent = 'Scanning…';
+  console.log('[mediadl/panel] REQUEST_SCAN for tab', currentTabId);
   const r = await chrome.runtime
     .sendMessage({ type: 'REQUEST_SCAN', tabId: currentTabId })
     .catch((e) => ({ ok: false, error: String(e) }));
+  console.log('[mediadl/panel] REQUEST_SCAN result:', r);
   if (!r || !r.ok) {
     statusEl.textContent =
-      "Can't scan this page. Chrome blocks extensions on chrome://, the Web Store, and similar internal pages. Other pages may need a reload first.";
-  } else {
-    // Status will be cleared by render() once items arrive.
+      "Can't scan this page (" +
+      (r && r.error ? r.error : 'unknown') +
+      "). Chrome blocks extensions on chrome://, the Web Store, and similar internal pages. Other pages may need a reload first.";
   }
 }
 
@@ -54,6 +56,10 @@ chrome.runtime.onMessage.addListener((msg) => {
   if (!msg || msg.tabId !== currentTabId) return;
 
   if (msg.type === 'STATE_UPDATE' && msg.snapshot) {
+    console.log(
+      '[mediadl/panel] STATE_UPDATE received, items=',
+      msg.snapshot.items?.length || 0
+    );
     hydrate(msg.snapshot);
     return;
   }

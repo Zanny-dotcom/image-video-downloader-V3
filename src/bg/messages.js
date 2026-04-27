@@ -23,6 +23,12 @@ export function installMessageRouter() {
       const tabId = sender.tab?.id;
       if (tabId == null) return;
       if (!Array.isArray(msg.items)) return;
+      console.log(
+        '[mediadl/bg] SCAN_RESULT from tab',
+        tabId,
+        '— items:',
+        msg.items.length
+      );
       mergeItems(tabId, msg.items, msg.pageMeta || null);
       updateBadge(tabId);
       broadcastState(tabId);
@@ -52,10 +58,17 @@ export function installMessageRouter() {
         sendResponse({ ok: false, error: 'no tabId' });
         return false;
       }
+      console.log('[mediadl/bg] REQUEST_SCAN: injecting into tab', tabId);
       chrome.scripting
         .executeScript({ target: { tabId }, files: ['src/content/main.js'] })
-        .then(() => sendResponse({ ok: true }))
-        .catch((e) => sendResponse({ ok: false, error: errorMessage(e) }));
+        .then(() => {
+          console.log('[mediadl/bg] executeScript ok for tab', tabId);
+          sendResponse({ ok: true });
+        })
+        .catch((e) => {
+          console.warn('[mediadl/bg] executeScript failed for tab', tabId, e);
+          sendResponse({ ok: false, error: errorMessage(e) });
+        });
       return true;
     }
 

@@ -5,7 +5,9 @@
 // shares globals across files anyway.
 
 (() => {
+  console.log('[mediadl/content] injection on', location.href);
   if (globalThis.__mediadl_injected) {
+    console.log('[mediadl/content] already injected, triggering rescan');
     globalThis.__mediadl_rescan?.();
     return;
   }
@@ -382,12 +384,27 @@
     nodeBudget = SCAN_NODE_BUDGET;
     const items = [];
     const seen = new Set();
-    try { scanImages(items, seen); } catch (e) { console.warn('[mediadl] img', e); }
-    try { scanPicture(items, seen); } catch (e) { console.warn('[mediadl] picture', e); }
-    try { scanCssBackground(items, seen); } catch (e) { console.warn('[mediadl] css-bg', e); }
-    try { scanInlineSvg(items, seen); } catch (e) { console.warn('[mediadl] svg', e); }
-    try { scanVideos(items, seen); } catch (e) { console.warn('[mediadl] video', e); }
-    try { scanIframes(items, seen); } catch (e) { console.warn('[mediadl] iframe', e); }
+    try { scanImages(items, seen); } catch (e) { console.warn('[mediadl/content] img', e); }
+    try { scanPicture(items, seen); } catch (e) { console.warn('[mediadl/content] picture', e); }
+    try { scanCssBackground(items, seen); } catch (e) { console.warn('[mediadl/content] css-bg', e); }
+    try { scanInlineSvg(items, seen); } catch (e) { console.warn('[mediadl/content] svg', e); }
+    try { scanVideos(items, seen); } catch (e) { console.warn('[mediadl/content] video', e); }
+    try { scanIframes(items, seen); } catch (e) { console.warn('[mediadl/content] iframe', e); }
+
+    const imgCount = items.filter((it) => it.kind === 'image').length;
+    const vidCount = items.filter((it) => it.kind === 'video').length;
+    const blkCount = items.filter((it) => it.blocked).length;
+    console.log(
+      '[mediadl/content] scan complete: ' +
+        items.length +
+        ' total (' +
+        imgCount +
+        ' images, ' +
+        vidCount +
+        ' videos, ' +
+        blkCount +
+        ' blocked)'
+    );
 
     try {
       chrome.runtime.sendMessage({
@@ -395,8 +412,8 @@
         items,
         pageMeta: pageMeta(),
       });
-    } catch {
-      /* extension context invalidated */
+    } catch (e) {
+      console.warn('[mediadl/content] sendMessage failed (extension context invalidated):', e);
     }
   }
 
