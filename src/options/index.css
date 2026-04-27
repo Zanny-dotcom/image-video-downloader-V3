@@ -1,0 +1,114 @@
+:root {
+  color-scheme: light dark;
+  --bg: #fafafa;
+  --fg: #222222;
+  --muted: #444444;
+  --hint: #666666;
+  --input-bg: #ffffff;
+  --input-border: #cccccc;
+  --input-border-hover: #999999;
+  --code-bg: rgba(0, 0, 0, 0.06);
+  --toast-bg: #ddffdd;
+  --toast-fg: #1a4d1a;
+  --focus-ring: #2563eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a1a;
+    --fg: #e6e6e6;
+    --muted: #c8c8c8;
+    --hint: #9a9a9a;
+    --input-bg: #2a2a2a;
+    --input-border: #4a4a4a;
+    --input-border-hover: #6a6a6a;
+    --code-bg: rgba(255, 255, 255, 0.08);
+    --toast-bg: #1f3a1f;
+    --toast-fg: #b6e8b6;
+    --focus-ring: #60a5fa;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 24px;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+#app {
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+h1 {
+  font-size: 16px;
+  margin: 0 0 4px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.label {
+  font-weight: 500;
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--hint);
+}
+
+.hint code {
+  background: var(--code-bg);
+  padding: 0 4px;
+  border-radius: 2px;
+  font-size: 10px;
+}
+
+input[type="text"],
+input[type="number"] {
+  padding: 6px 8px;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  font-size: 13px;
+  max-width: 280px;
+  background: var(--input-bg);
+  color: var(--fg);
+}
+
+input[type="text"]:hover,
+input[type="number"]:hover {
+  border-color: var(--input-border-hover);
+}
+
+input:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-color: var(--focus-ring);
+}
+
+#toast {
+  background: var(--toast-bg);
+  color: var(--toast-fg);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  align-self: flex-start;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 16px;
+  }
+}

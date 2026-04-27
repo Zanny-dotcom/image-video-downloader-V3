@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Universal Media Downloader — Options</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div id="app">
+      <h1>Universal Media Downloader — Options</h1>
+
+      <div class="field">
+        <label for="subfolder" class="label">Subfolder name</label>
+        <input id="subfolder" type="text" placeholder="web-downloads" autocomplete="off" spellcheck="false" />
+        <span class="hint">Created inside your default Downloads folder. Allowed characters: letters, digits, <code>.</code> <code>_</code> <code>-</code></span>
+      </div>
+
+      <div class="field">
+        <label for="concurrencyLimit" class="label">Concurrent downloads</label>
+        <input id="concurrencyLimit" type="number" min="1" max="16" step="1" />
+        <span class="hint">How many files to download in parallel. 1–16. Default 6.</span>
+      </div>
+
+      <div id="toast" class="hidden" role="status" aria-live="polite">Saved</div>
+    </div>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>
